@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-chat-heart' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M2.965 12.695a1 1 0 0 0-.287-.801C1.618 10.83 1 9.468 1 8c0-3.192 3.004-6 7-6s7 2.808 7 6-3.004 6-7 6a8 8 0 0 1-2.088-.272 1 1 0 0 0-.711.074c-.387.196-1.24.57-2.634.893a11 11 0 0 0 .398-2m-.8 3.108.02-.004c1.83-.363 2.948-.842 3.468-1.105A9 9 0 0 0 8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6a10.4 10.4 0 0 1-.524 2.318l-.003.011a11 11 0 0 1-.244.637c-.079.186.074.394.273.362a22 22 0 0 0 .693-.125M8 5.993c1.664-1.711 5.825 1.283 0 5.132-5.825-3.85-1.664-6.843 0-5.132'/%3E%3C/svg%3E">
+    <title>Lịch Sử Chat</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style_history_chat.css') }}">
+</head>
+<body>
+
+<div class="history-container">
+    <div class="header">
+        <a href="{{ url_for('index') }}" class="back-btn"><span>←</span> Trở về</a>
+        <h1>🕒 Lịch Sử Chat</h1>
+    </div>
+
+    <div class="filter-section">
+        <button class="filter-btn active">Tất cả</button>
+        <button class="filter-btn">Hôm nay</button>
+        <button class="filter-btn">Tuần này</button>
+        <button class="filter-btn">Tháng này</button>
+    </div>
+
+    <div class="history-list" id="history-list">
+        <div class="loading-text">Đang tải dữ liệu...</div>
+    </div>
+</div>
+
+<script>
+    // Hàm RENDER DỮ LIỆU RA HTML (Giữ nguyên như cũ)
+    function renderChatHistory(data) {
+        const historyListEl = document.getElementById('history-list');
+        historyListEl.innerHTML = ''; // Xóa chữ "Đang tải..."
+
+        if (data.length === 0) {
+            historyListEl.innerHTML = '<div class="loading-text">Chưa có lịch sử trò chuyện nào.</div>';
+            return;
+        }
+
+        data.forEach(item => {
+            const iconClass = item.type === 'ai' ? 'icon-ai' : 'icon-user';
+            const iconSymbol = item.type === 'ai' ? '🤖' : '👤';
+
+            const itemHTML = `
+                <div class="history-item" onclick="openChat(${item.id})">
+                    <div class="icon ${iconClass}">${iconSymbol}</div>
+                    <div class="details">
+                        <div class="title-row">
+                            <p class="title">${item.title}</p>
+                            <span class="time">${item.time}</span>
+                        </div>
+                        <p class="snippet">${item.snippet}</p>
+                    </div>
+                </div>
+            `;
+            historyListEl.insertAdjacentHTML('beforeend', itemHTML);
+        });
+    }
+
+    // HÀM MỚI: Gọi API từ app.py (Flask)
+    async function fetchHistoryFromDatabase() {
+        try {
+            // Gọi lên route /api/history mà chúng ta vừa thêm vào app.py
+            const response = await fetch('/api/history');
+            
+            if (!response.ok) {
+                throw new Error('Lỗi khi tải dữ liệu từ server');
+            }
+            
+            const data = await response.json();
+            
+            // Vẽ dữ liệu ra màn hình
+            renderChatHistory(data);
+            
+        } catch (error) {
+            console.error(error);
+            document.getElementById('history-list').innerHTML = '<div class="loading-text" style="color: red;">Lỗi kết nối đến máy chủ!</div>';
+        }
+    }
+
+    // Chạy hàm lấy dữ liệu ngay khi mở trang
+    fetchHistoryFromDatabase();
+
+    function openChat(chatId) {
+        console.log("Mở tin nhắn có ID:", chatId);
+    }
+</script>
+
+</body>
+</html>

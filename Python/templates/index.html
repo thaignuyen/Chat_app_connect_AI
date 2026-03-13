@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-chat-heart' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M2.965 12.695a1 1 0 0 0-.287-.801C1.618 10.83 1 9.468 1 8c0-3.192 3.004-6 7-6s7 2.808 7 6-3.004 6-7 6a8 8 0 0 1-2.088-.272 1 1 0 0 0-.711.074c-.387.196-1.24.57-2.634.893a11 11 0 0 0 .398-2m-.8 3.108.02-.004c1.83-.363 2.948-.842 3.468-1.105A9 9 0 0 0 8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6a10.4 10.4 0 0 1-.524 2.318l-.003.011a11 11 0 0 1-.244.637c-.079.186.074.394.273.362a22 22 0 0 0 .693-.125M8 5.993c1.664-1.711 5.825 1.283 0 5.132-5.825-3.85-1.664-6.843 0-5.132'/%3E%3C/svg%3E">
+    <title>Chat Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</head>
+<body>
+<div id="LoadingOverlay" class="hidden-loader">
+    <div class="spinner"></div>
+    <p>Connecting...</p>
+</div>
+<div class="dashboard">
+    <aside class="sidebar">
+        <h2>💬 Chat System</h2>
+        <ul class="nav-links">
+            <li>
+                <a href="#" onclick="window.location.reload(); return false;" class="refresh">⟳ Làm mới (Refresh)</a>
+            </li>
+            <li>
+                <a href="history.html">🕒 Lịch sử Chat</a>
+            </li>
+        </ul>
+
+        <div class="settings-wrapper">
+            <button id="settingsBtn" class="btn-primary">⚙️ Cài đặt</button>
+            
+            <div id="settingsMenu" class="hidden popup-menu">
+                <button id="brightnessBtn" class="btn-secondary">☀️ Độ sáng</button>
+                <div id="brightnessControl" class="hidden slider-container">
+                    <input type="range" id="brightnessSlider" min="50" max="150" value="100">
+                </div>
+                <button id="exitBtn" class="btn-danger">🚪 Thoát</button>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main">
+        <h1>Dashboard</h1>
+        <p class="subtitle">Chọn chế độ trò chuyện của bạn</p>
+        
+        <div class="cards">
+            <div class="card" data-url="chat_bot.html">
+                <div class="card-icon">🤖</div>
+                <h3>Chat Bot</h3>
+                <p>Trò chuyện với AI</p>
+            </div>
+            
+            <div class="card" data-url="chat_user.html">
+                <div class="card-icon">👤</div>
+                <h3>Chat User</h3>
+                <p>Kết nối với mọi người</p>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

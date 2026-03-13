@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-chat-heart' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M2.965 12.695a1 1 0 0 0-.287-.801C1.618 10.83 1 9.468 1 8c0-3.192 3.004-6 7-6s7 2.808 7 6-3.004 6-7 6a8 8 0 0 1-2.088-.272 1 1 0 0 0-.711.074c-.387.196-1.24.57-2.634.893a11 11 0 0 0 .398-2m-.8 3.108.02-.004c1.83-.363 2.948-.842 3.468-1.105A9 9 0 0 0 8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6a10.4 10.4 0 0 1-.524 2.318l-.003.011a11 11 0 0 1-.244.637c-.079.186.074.394.273.362a22 22 0 0 0 .693-.125M8 5.993c1.664-1.711 5.825 1.283 0 5.132-5.825-3.85-1.664-6.843 0-5.132'/%3E%3C/svg%3E">
+
+    <title>Chat với AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style_chat_bot.css') }}">
+</head>
+<body>
+
+<div class="chat-container">
+    <header class="chat-header">
+        <a href="{{ url_for('index') }}" class="back-btn">← Quay lại</a>
+        <h1>🤖 Chat với AI</h1>
+    </header>
+    
+    <div class="chat-box" id="chatBox">
+        <div class="message bot">Xin chào! Tôi là trợ lý AI. Tôi có thể giúp gì cho bạn hôm nay?</div>
+    </div>
+    
+    <div class="input-area">
+        <input type="text" placeholder="Nhập tin nhắn của bạn..." id="userInput" onkeypress="handleKeyPress(event)">
+        <button onclick="sendMessage()">Gửi</button>
+    </div>
+</div>
+
+<script>
+    async function sendMessage() {
+        const input = document.getElementById('userInput');
+        const messageText = input.value.trim();
+        
+        // Chặn gửi tin nhắn rỗng
+        if (messageText === '') return;
+        
+        const chatBox = document.getElementById('chatBox');
+        
+        // 1. Thêm tin nhắn của người dùng vào giao diện
+        const userMsg = document.createElement('div');
+        userMsg.className = 'message user';
+        userMsg.textContent = messageText;
+        chatBox.appendChild(userMsg);
+        
+        // Xóa input và cuộn thanh cuộn xuống dưới cùng
+        input.value = '';
+        chatBox.scrollTop = chatBox.scrollHeight;
+        
+        // 2. Gửi dữ liệu lên Python Backend (Flask) bằng Fetch API
+        try {
+            // Hiển thị trạng thái "AI đang suy nghĩ..." tạm thời
+            const loadingMsg = document.createElement('div');
+            loadingMsg.className = 'message bot';
+            loadingMsg.id = 'loadingMsg';
+            loadingMsg.textContent = 'AI đang suy nghĩ...';
+            chatBox.appendChild(loadingMsg);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Gọi API
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: messageText })
+            });
+
+            const data = await response.json();
+
+            // Xóa thông báo "AI đang suy nghĩ..." khi nhận được phản hồi
+            const loadingNode = document.getElementById('loadingMsg');
+            if (loadingNode) {
+                chatBox.removeChild(loadingNode);
+            }
+
+            // 3. Hiển thị tin nhắn phản hồi của AI
+            if (response.ok) {
+                const botMsg = document.createElement('div');
+                botMsg.className = 'message bot';
+                botMsg.textContent = data.reply;
+                chatBox.appendChild(botMsg);
+            } else {
+                // Xử lý khi server trả về lỗi
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'message bot';
+                errorMsg.style.color = "red";
+                errorMsg.textContent = data.error || "Đã có lỗi từ server API.";
+                chatBox.appendChild(errorMsg);
+            }
+
+        } catch (error) {
+            console.error('Lỗi kết nối:', error);
+            
+            // Xóa dòng loading nếu lỗi mạng xảy ra
+            const loadingNode = document.getElementById('loadingMsg');
+            if (loadingNode) {
+                chatBox.removeChild(loadingNode);
+            }
+
+            // Hiển thị lỗi kết nối
+            const errorMsg = document.createElement('div');
+            errorMsg.className = 'message bot';
+            errorMsg.style.color = "red";
+            errorMsg.textContent = "Lỗi kết nối mạng. Hãy đảm bảo server Flask đang chạy.";
+            chatBox.appendChild(errorMsg);
+        }
+
+        // Đảm bảo cuộn xuống dòng tin nhắn mới nhất
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function handleKeyPress(event) {
+        if (event.key === 'Enter') {
+            sendMessage();
+        }
+    }
+</script>
+
+</body>
+</html>

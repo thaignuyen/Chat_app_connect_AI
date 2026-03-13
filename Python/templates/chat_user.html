@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-chat-heart' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M2.965 12.695a1 1 0 0 0-.287-.801C1.618 10.83 1 9.468 1 8c0-3.192 3.004-6 7-6s7 2.808 7 6-3.004 6-7 6a8 8 0 0 1-2.088-.272 1 1 0 0 0-.711.074c-.387.196-1.24.57-2.634.893a11 11 0 0 0 .398-2m-.8 3.108.02-.004c1.83-.363 2.948-.842 3.468-1.105A9 9 0 0 0 8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6a10.4 10.4 0 0 1-.524 2.318l-.003.011a11 11 0 0 1-.244.637c-.079.186.074.394.273.362a22 22 0 0 0 .693-.125M8 5.993c1.664-1.711 5.825 1.283 0 5.132-5.825-3.85-1.664-6.843 0-5.132'/%3E%3C/svg%3E"> 
+    <title>Chat với Người Dùng</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style_chat_user.css') }}"></head>
+<body>
+
+<div class="chat-container">
+    <header class="chat-header">
+        <a href="{{ url_for('index') }}" class="back-btn"><span>←</span> Trở về</a>
+        <h1>👤 Chat với Người Dùng</h1>
+    </header>
+    
+    <div class="chat-box" id="chatBox">
+        <div class="message friend">Chào bạn! Mình có thể trao đổi với bạn một chút được không?</div>
+    </div>
+    
+    <div class="input-area">
+        <input type="text" placeholder="Nhập tin nhắn..." id="userInput" onkeypress="handleKeyPress(event)">
+        <button onclick="sendMessage()">Gửi</button>
+    </div>
+</div>
+
+<script>
+    function sendMessage() {
+        const input = document.getElementById('userInput');
+        const messageText = input.value.trim();
+        if(messageText === '') return;
+        
+        const chatBox = document.getElementById('chatBox');
+        
+        // Tạo element cho tin nhắn người dùng
+        const userMsg = document.createElement('div');
+        userMsg.className = 'message user';
+        userMsg.textContent = messageText;
+        chatBox.appendChild(userMsg);
+        
+        input.value = '';
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function handleKeyPress(event) {
+        if (event.key === 'Enter') {
+            sendMessage();
+        }
+    }
+</script>
+
+</body>
+</html>

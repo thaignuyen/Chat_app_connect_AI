@@ -15,6 +15,10 @@ DEFAULT_DB_NAME = 'chat_app.db'
 
 
 class Database:
+    @staticmethod
+    def init_db():
+        print("khởi tạo database")
+
     def __init__(self, db_path: Optional[str] = None):
         base = pathlib.Path(__file__).resolve().parent
         if db_path:
@@ -58,22 +62,27 @@ class Database:
         rows = cursor.fetchall()
         conn.close()
         return rows
-    def init_db() -> None:
-        return _default_db.init_db()
 
 
-    def save_message(sender: str, content: str) -> None:
-        return _default_db.save_message(sender, content)
+# --- BẮT ĐẦU VÙNG SỬA LỖI (Đã đẩy 3 hàm này ra ngoài class) ---
+
+def init_db() -> None:
+    return _default_db.init_db()
 
 
-    def get_messages(limit: int = 100) -> List[Tuple[int, str, str, str]]:
-        return _default_db.get_messages(limit)
+def save_message(sender: str, content: str) -> None:
+    return _default_db.save_message(sender, content)
+
+
+def get_messages(limit: int = 100) -> List[Tuple[int, str, str, str]]:
+    return _default_db.get_messages(limit)
+
+# --- KẾT THÚC VÙNG SỬA LỖI ---
 
 
 # tạo một instance mặc định để các hàm module-level có thể sử dụng
 _default_db = Database()
-
-
+init_db() # Đã sửa từ Database.init_db() thành init_db() vì bây giờ nó là hàm module-level
 
 
 if __name__ == "__main__":
